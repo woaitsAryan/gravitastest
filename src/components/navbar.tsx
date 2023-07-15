@@ -4,20 +4,15 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Button from '@mui/material/Button';
-import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
+import { useSpring, animated } from 'react-spring';
 
 export default function SwipeableTemporaryDrawer() {
-  const [state, setState] = React.useState({
-    right: false,
-  });
+  const [isOpen, setisOpen] = React.useState(false);
 
-  const toggleDrawer = (anchor: string, open: boolean) => (
+  const toggleDrawer = (open: boolean) => (
     event: React.KeyboardEvent | React.MouseEvent
   ) => {
     if (
@@ -29,49 +24,71 @@ export default function SwipeableTemporaryDrawer() {
       return;
     }
 
-    setState({ ...state, [anchor]: open });
+    setisOpen(open);
   };
 
-  const list = (anchor: string) => (
-    <Box
-      sx={{ width: "500px" }}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider variant="middle" >Socials</Divider>
-      <List>
-        {['Instagram', 'Linkedin', 'Github'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+  const navbarAnimation = useSpring({
+    borderRadius: isOpen ? '0px' : '50%',
+    width: isOpen ? '200px' : '50px',
+    // Additional styles...
+  });
 
   return (
     <div>
-      <Button onClick={toggleDrawer('right', true)}><MenuIcon></MenuIcon></Button>
+      <Button onClick={toggleDrawer(true)}><MenuIcon></MenuIcon></Button>
+      <animated.div className="navbar" style={navbarAnimation}>
       <SwipeableDrawer
         anchor="right"
-        open={state.right}
-        onClose={toggleDrawer('right', false)}
-        onOpen={toggleDrawer('right', true)}
+        open={isOpen}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
       >
-        {list('right')}
+      <Box
+      sx={{ width: "500px" }}
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+      >
+        <Link href="/inbox">
+          <Button variant="text" fullWidth>
+            Inbox
+          </Button>
+        </Link>
+        <Link href="/starred">
+          <Button variant="text" fullWidth>
+            Starred
+          </Button>
+        </Link>
+        <Link href="/send-email">
+          <Button variant="text" fullWidth>
+            Send email
+          </Button>
+        </Link>
+        <Link href="/drafts">
+          <Button variant="text" fullWidth>
+            Drafts
+          </Button>
+        </Link>
+        <Divider variant="middle">Socials</Divider>
+        <Link href="https://www.instagram.com">
+          <Button variant="text" fullWidth>
+            Instagram
+          </Button>
+        </Link>
+        <Link href="https://www.linkedin.com">
+          <Button variant="text" fullWidth>
+            Linkedin
+          </Button>
+        </Link>
+        <Link href="https://www.github.com">
+          <Button variant="text" fullWidth>
+            Github
+          </Button>
+        </Link>
+        
+      </Box>
       </SwipeableDrawer>
+      </animated.div>
     </div>
   );
 }
